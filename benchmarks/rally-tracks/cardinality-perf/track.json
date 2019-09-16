@@ -1,0 +1,117 @@
+{
+    "version": 2,
+    "description": "Test Cardinality Performance",
+    "indices": [
+        {
+            "name": "docs_hll",
+            "body": "indices/index-hll.json",
+            "types": [
+                "_doc"
+            ]
+        },
+        {
+            "name": "docs_long",
+            "body": "indices/index-long.json",
+            "types": [
+                "_doc"
+            ]
+        }
+    ],
+    "corpora": [
+        {
+            "name": "docs_tiny_hll",
+            "documents": [
+                {
+                    "source-file": "../documents-small.json",
+                    "document-count": 100000,
+                    "target-index": "docs_hll",
+                    "target-type": "_doc"
+                }
+            ]
+        },
+        {
+            "name": "docs_tiny_long",
+            "documents": [
+                {
+                    "source-file": "../documents-small.json",
+                    "document-count": 100000,
+                    "target-index": "docs_long",
+                    "target-type": "_doc"
+                }
+            ]
+        }
+    ],
+    "operations": [
+        {
+            "name": "delete",
+            "operation-type": "delete-index"
+        },
+        {
+            "name": "create",
+            "operation-type": "create-index"
+        },
+        {
+            "name": "wait-for-green",
+            "operation-type": "cluster-health",
+            "request-params": {
+                "wait_for_status": "green"
+            }
+        },
+        {
+            "name": "bulk-index-hll",
+            "operation-type": "bulk",
+            "bulk-size": 500,
+            "indices": [
+                "docs_hll"
+            ],
+            "ingest-percentage": 10
+        },
+        {
+            "name": "bulk-index-long",
+            "operation-type": "bulk",
+            "bulk-size": 500,
+            "indices": [
+                "docs_long"
+            ],
+            "ingest-percentage": 10
+        },
+        {
+            "name": "force-merge",
+            "operation-type": "force-merge"
+        },
+        {
+            "name": "all-jobs-cardinality-hll",
+            "operation-type": "search",
+            "index": "docs_hll",
+            "type": "_doc",
+            "body": {
+                "aggs": {
+                    "all_jobs_cardinality": {
+                        "hll-cardinality": {
+                            "field": "all_jobs"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "all-jobs-cardinality-long",
+            "operation-type": "search",
+            "index": "docs_long",
+            "type": "_doc",
+            "body": {
+                "aggs": {
+                    "all_jobs_cardinality": {
+                        "cardinality": {
+                            "field": "all_jobs"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "challenges": [
+        {% include "challenges/cardinality-hll.json" %},
+        {% include "challenges/cardinality-long.json" %}
+    ]
+}

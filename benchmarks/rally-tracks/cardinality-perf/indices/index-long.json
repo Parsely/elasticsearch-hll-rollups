@@ -1,0 +1,39 @@
+{
+    "settings": {
+        "index": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+        }
+    },
+    "mappings": {
+        "_doc": {
+            "_source": {
+                "excludes": [
+                    "new_issues",
+                    "all_issues"
+                ]
+            },
+            "dynamic": "strict",
+            "properties": {
+                "service_id": {
+                    "type": "keyword"
+                },
+                "container_id": {
+                    "type": "keyword"
+                },
+                "all_jobs": {
+                    "type": "long"
+                },
+                "all_jobs_len": {
+                    "type": "long"
+                },
+                "running_jobs": {
+                    "type": "long"
+                },
+                "running_jobs_len": {
+                    "type": "long"
+                }
+            }
+        }
+    }
+}

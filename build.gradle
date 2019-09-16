@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.elasticsearch.gradle:build-tools:6.8.2"
+    }
+}
+
+group = 'com.parsely'
+version = '0.0.1'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'elasticsearch.esplugin'
+
+
+dependencies {
+    compile "org.elasticsearch:elasticsearch:6.8.2"
+    compile "org.elasticsearch.plugin:aggs-matrix-stats-client:6.8.2"
+    testCompile "org.elasticsearch.test:framework:6.8.2"
+}
+
+checkstyleMain.enabled = false
+checkstyleTest.enabled = false
+
+
+licenseFile = rootProject.file('LICENSE.txt')
+noticeFile = rootProject.file('NOTICE.txt')
+
+esplugin {
+  description 'The Mapper HLL plugin allows you to compute serialized HLLs at index-time and to store them in the index.'
+  classname 'com.parsely.elasticsearch.plugin.HLLRollupPlugin'
+}

@@ -1,0 +1,81 @@
+# Integration tests for Mapper HLL components
+#
+
+---
+"Mapper HLL":
+
+    - do:
+          indices.create:
+              index: test
+              body:
+                  mappings:
+                      type1: { "properties": { "foo": { "type": "hll" } } }
+
+    - do:
+          index:
+              index: test
+              type: type1
+              id: 0
+              body: { "foo": "bar" }
+
+    - do:
+          indices.refresh: {}
+
+    - do:
+          search:
+              body: { "aggs": { "foo_count": { "hll-cardinality": { "field": "foo" } } } }
+
+    - match: { aggregations.foo_count.value: 1 }
+
+    - do:
+          index:
+              index: test
+              type: type1
+              id: 1
+              body: { "foo": "bar" }
+
+    - do:
+          index:
+              index: test
+              type: type1
+              id: 2
+              body: { "foo": "baz" }
+
+    - do:
+          index:
+              index: test
+              type: type1
+              id: 3
+              body: { "foo": "bam" }
+
+    - do:
+          index:
+              index: test
+              type: type1
+              id: 4
+              body: { "foo": "bar" }
+
+    - do:
+          indices.refresh: {}
+
+    - do:
+          search:
+              body: { "aggs": { "foo_count": { "hll-cardinality": { "field": "foo" } } } }
+
+    - match: { aggregations.foo_count.value: 3 }
+
+    - do:
+          index:
+              index: test
+              type: type1
+              id: 5
+              body: { "foo": ["1", "2", "3", "4"] }
+
+    - do:
+          indices.refresh: {}
+
+    - do:
+          search:
+              body: { "aggs": { "foo_count": { "hll-cardinality": { "field": "foo" } } } }
+
+    - match: { aggregations.foo_count.value: 7 }

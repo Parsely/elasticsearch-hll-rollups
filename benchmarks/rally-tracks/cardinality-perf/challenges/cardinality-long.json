@@ -1,0 +1,30 @@
+{
+    "name": "cardinality-long",
+    "default": false,
+    "schedule": [
+        {
+            "operation": "delete"
+        },
+        {
+            "operation": "create"
+        },
+        {
+            "operation": "wait-for-green"
+        },
+        {
+            "operation": "bulk-index-long",
+            "warmup-time-period": 1,
+            "clients": 4
+        },
+        {
+            "operation": "force-merge"
+        },
+        {
+            "operation": "all-jobs-cardinality-long",
+            "clients": 16,
+            "warmup-iterations": 50,
+            "iterations": 500,
+            "target-throughput": 50
+        }
+    ]
+}
